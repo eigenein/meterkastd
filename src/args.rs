@@ -6,7 +6,7 @@ use reqwest::Url;
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
 pub struct Args {
-    /// [YouLess](https://www.youless.nl) meter endpoint.
+    /// [Youless](https://www.youless.nl) meter endpoint.
     #[arg(
         long = "youless",
         value_name = "ENDPOINT",

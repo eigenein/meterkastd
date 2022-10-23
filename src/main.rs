@@ -32,7 +32,7 @@ async fn main() -> Result {
     let values = youless_client.get_counters().await?;
     info!(?values);
     let db = Database::open(&args.database_path)?;
-    db.get_sensor_tree(EnergyType::Gas, FlowDirection::Consumption, CounterType::Cumulative)?
+    db.open_sensor_tree(EnergyType::Gas, FlowDirection::Consumption, CounterType::Cumulative)?
         .insert(values[0].timestamp, values[0].gas_consumption_m3)?;
     Ok(())
 }

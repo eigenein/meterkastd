@@ -3,22 +3,22 @@ use sled::IVec;
 use crate::persistence::timestamp::TimestampKey;
 use crate::prelude::*;
 
-pub struct SensorLog(sled::Tree);
+pub struct Tree(sled::Tree);
 
-impl SensorLog {
+impl Tree {
     pub const fn new(tree: sled::Tree) -> Self {
         Self(tree)
     }
 
     pub fn insert(&self, timestamp: DateTime, value: f64) -> Result {
         self.0
-            .insert(Self::convert_key(timestamp), &value.to_be_bytes())
+            .insert(Self::timestamp_to_key(timestamp), &value.to_be_bytes())
             .context("failed to insert the value")?;
         Ok(())
     }
 
     #[inline]
-    fn convert_key<K: Into<TimestampKey>>(key: K) -> [u8; 8] {
+    fn timestamp_to_key<K: Into<TimestampKey>>(key: K) -> [u8; 8] {
         key.into().into()
     }
 
