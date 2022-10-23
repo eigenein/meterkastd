@@ -9,15 +9,18 @@
 )]
 
 mod args;
+mod enums;
+mod persistence;
 mod prelude;
 mod tracing;
-mod uom;
 mod youless;
 
 use clap::Parser;
 
 use self::prelude::*;
 use crate::args::Args;
+use crate::enums::{CounterType, EnergyType, FlowDirection};
+use crate::persistence::Database;
 use crate::youless::Client;
 
 #[tokio::main]
@@ -28,5 +31,8 @@ async fn main() -> Result {
     let youless_client = Client::new(&args.youless_base_url)?;
     let values = youless_client.get_counters().await?;
     info!(?values);
+    let db = Database::open(&args.database_path)?;
+    db.get_sensor_tree(EnergyType::Gas, FlowDirection::Consumption, CounterType::Cumulative)?
+        .insert(values[0].timestamp, values[0].gas_consumption_m3)?;
     Ok(())
 }
