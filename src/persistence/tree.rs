@@ -1,6 +1,4 @@
-use sled::IVec;
-
-use crate::persistence::timestamp::TimestampKey;
+use crate::persistence::BigEndian;
 use crate::prelude::*;
 
 pub struct Tree(sled::Tree);
@@ -10,20 +8,14 @@ impl Tree {
         Self(tree)
     }
 
-    pub fn insert(&self, timestamp: DateTime, value: f64) -> Result {
+    pub fn insert<const N: usize, const M: usize>(
+        &self,
+        key: impl BigEndian<N>,
+        value: impl BigEndian<M>,
+    ) -> Result {
         self.0
-            .insert(Self::timestamp_to_key(timestamp), &value.to_be_bytes())
+            .insert(key.to_be_bytes(), &value.to_be_bytes()[..])
             .context("failed to insert the value")?;
         Ok(())
-    }
-
-    #[inline]
-    fn timestamp_to_key<K: Into<TimestampKey>>(key: K) -> [u8; 8] {
-        key.into().into()
-    }
-
-    #[inline]
-    fn ivec_to_f64(ivec: &IVec) -> Result<f64> {
-        Ok(f64::from_be_bytes(ivec.as_ref().try_into()?))
     }
 }

@@ -13,6 +13,7 @@ mod enums;
 mod persistence;
 mod prelude;
 mod tracing;
+mod web;
 mod youless;
 
 use clap::Parser;
