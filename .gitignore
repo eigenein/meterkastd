@@ -1,3 +1,5 @@
+*.sled
+
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,macos,windows,linux,visualstudiocode,sublimetext,git,rust
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,macos,windows,linux,visualstudiocode,sublimetext,git,rust
 

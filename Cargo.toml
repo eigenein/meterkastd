@@ -2,5 +2,29 @@
 name = "meterkastd"
 version = "0.0.0"
 edition = "2021"
+authors = ["Pavel Perestoronin <eigenein@gmail.com>"]
+license-file = "LICENSE"
+repository = "https://github.com/eigenein/meterkastd"
+readme = "README.md"
+description = "YouLess energy monitor"
 
 [dependencies]
+anyhow = "1.0.66"
+chrono = "0.4.22"
+clap = { version = "4.0.18", features = ["derive", "env"] }
+reqwest = { version = "0.11.12", default-features = false, features = ["json"] }
+serde = "1.0.147"
+serde_json = "1.0.87"
+serde_with = { version = "2.0.1", features = ["chrono"] }
+sled = "0.34.7"
+tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.16", features = ["fmt", "env-filter"] }
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+debug = 1
+
+[profile.dev]
+split-debuginfo = "unpacked"
