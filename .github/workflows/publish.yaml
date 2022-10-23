@@ -1,0 +1,58 @@
+name: Publish
+
+on:
+  release:
+    types: ["published"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Update the crate version
+        run: |
+          echo 'version = "${{ github.ref_name }}"'
+          sed -i -e 's/version = "0.0.0"/version = "${{ github.ref_name }}"/g' Cargo.toml
+          sed -i -e 's/version = "0.0.0"/version = "${{ github.ref_name }}"/g' Cargo.lock
+      - name: Build Changelog
+        id: changelog
+        uses: Bullrich/generate-release-changelog@master
+        env:
+          REPO: ${{ github.repository }}
+
+      - name: Update release
+        uses: tubone24/update_release@v1.3.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body: ${{ steps.changelog.outputs.changelog }}
+          prerelease: false
+
+      - name: Rustup
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Install Cross
+        run: cargo install --locked --git https://github.com/cross-rs/cross.git cross
+
+      - name: Build for Raspberry Pi Zero W
+        run: cross build --target arm-unknown-linux-gnueabihf --release
+
+      - name: Upload the release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: "${{ github.event.release.upload_url }}"
+          asset_path: "target/arm-unknown-linux-gnueabihf/release/meterkastd"
+          asset_name: "meterkastd.arm-unknown-linux-gnueabihf"
+          asset_content_type: "application/octet-stream"
