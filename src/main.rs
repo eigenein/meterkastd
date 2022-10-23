@@ -17,6 +17,7 @@ mod web;
 mod youless;
 
 use clap::Parser;
+use tokio::{spawn, try_join};
 
 use self::prelude::*;
 use crate::args::Args;
@@ -28,12 +29,15 @@ use crate::youless::Client;
 async fn main() -> Result {
     tracing::init()?;
     let args = Args::parse();
-    info!(%args.youless_base_url, "starting up…");
+
+    info!("starting up…");
+    let db = Arc::new(Database::open(&args.database_path)?);
     let youless_client = Client::new(&args.youless_base_url)?;
-    let values = youless_client.get_counters().await?;
-    info!(?values);
-    let db = Database::open(&args.database_path)?;
-    db.open_sensor_tree(EnergyType::Gas, FlowDirection::Consumption, CounterType::Cumulative)?
-        .insert(values[0].timestamp, values[0].gas_consumption_m3)?;
-    Ok(())
+
+    info!("running…");
+    let (web_result, youless_result) = try_join!(
+        spawn(web::run(args.bind_endpoint, Arc::clone(&db))),
+        spawn(youless::run(db, youless_client))
+    )?;
+    web_result.and(youless_result).context("fatal error")
 }

@@ -31,5 +31,5 @@ pub struct Args {
         default_value = "localhost:8082",
         env = "METERKASTD_BIND_ENDPOINT"
     )]
-    pub bind_endpoint: PathBuf,
+    pub bind_endpoint: String,
 }
