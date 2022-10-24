@@ -13,6 +13,7 @@ pub struct Client {
 }
 
 impl Client {
+    #[instrument(skip_all, fields(base_url = ?base_url))]
     pub fn new(base_url: &Url) -> Result<Self> {
         let export_url = base_url
             .join("e")

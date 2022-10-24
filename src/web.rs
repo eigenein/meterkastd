@@ -1,7 +1,5 @@
 mod middleware;
 
-use std::sync::Arc;
-
 use poem::listener::TcpListener;
 use poem::middleware::CatchPanic;
 use poem::web::Json;
@@ -9,9 +7,8 @@ use poem::{get, handler, EndpointExt, IntoResponse, Route, Server};
 
 use crate::prelude::*;
 use crate::web::middleware::*;
-use crate::Database;
 
-pub async fn run(endpoint: String, db: Arc<Database>) -> Result {
+pub async fn run(endpoint: String, db: sled::Db) -> Result {
     let app = Route::new()
         .at("/health", get(health))
         .data(db)
