@@ -4,6 +4,7 @@ use crate::enums::{CounterType, EnergyType, FlowDirection};
 use crate::persistence::Tree;
 use crate::prelude::*;
 
+#[must_use]
 pub struct Database(sled::Db);
 
 impl Database {
