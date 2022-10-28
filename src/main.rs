@@ -9,6 +9,7 @@
 )]
 
 mod args;
+mod persistence;
 mod prelude;
 mod tracing;
 mod web;
@@ -19,6 +20,7 @@ use tokio::{spawn, try_join};
 
 use self::prelude::*;
 use crate::args::Args;
+use crate::persistence::Db;
 use crate::youless::{Client, Youless};
 
 #[tokio::main]
@@ -27,7 +29,7 @@ async fn main() -> Result {
     let args = Args::parse();
 
     info!("starting up…");
-    let db = sled::open(&args.database_path).context("failed to open the database")?;
+    let db = Db(sled::open(&args.database_path).context("failed to open the database")?);
     let youless_client = Client::new(&args.youless_base_url)?;
     let youless = Youless::new(&db, youless_client)?;
 

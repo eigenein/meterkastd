@@ -26,6 +26,3 @@ tracing-subscriber = { version = "0.3.16", features = ["fmt", "env-filter"] }
 lto = "fat"
 codegen-units = 1
 debug = 1
-
-[profile.dev]
-split-debuginfo = "unpacked"

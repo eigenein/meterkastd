@@ -5,10 +5,11 @@ use poem::middleware::CatchPanic;
 use poem::web::Json;
 use poem::{get, handler, EndpointExt, IntoResponse, Route, Server};
 
+use crate::persistence::Db;
 use crate::prelude::*;
 use crate::web::middleware::*;
 
-pub async fn run(endpoint: String, db: sled::Db) -> Result {
+pub async fn run(endpoint: String, db: Db) -> Result {
     let app = Route::new()
         .at("/health", get(health))
         .data(db)
